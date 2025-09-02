@@ -1,0 +1,8 @@
+[package]
+name = "shell"
+version = "0.1.0"
+edition = "2024"
+
+[dev-dependencies]
+assert_cmd = "2.0" # For integration tests
+predicates = "2.1" # For test assertions
