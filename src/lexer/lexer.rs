@@ -1,5 +1,5 @@
 use crate::types::tokens::{Token, TokenWithPos};
-use crate::utils::error::{ShellError, Result};
+use crate::utils::error::{Result, ShellError};
 
 pub struct Lexer {
     input: String,
@@ -37,16 +37,17 @@ impl Lexer {
 
     pub fn tokenize(&mut self) -> Result<Vec<TokenWithPos>> {
         let mut tokens = Vec::new();
-        
+        let mut is_start_of_command = true;
+
         while self.current_char.is_some() {
             let start = self.position - 1;
-            
+
             // Skip whitespace
             if self.current_char.unwrap().is_whitespace() {
                 self.advance();
                 continue;
             }
-            
+
             let token = match self.current_char.unwrap() {
                 '|' => {
                     self.advance();
@@ -65,33 +66,51 @@ impl Lexer {
                     self.advance();
                     Token::RedirectIn
                 }
-                '&' => {
-                    self.advance();
-                    Token::And
-                }
                 ';' => {
                     self.advance();
                     Token::Semicolon
                 }
-                '\'' | '"' => self.parse_quoted_string()?,
-                _ => self.parse_word()?,
+                '\'' | '"' => {
+                    let word = self.parse_quoted_string()?;
+                    self.classify_word(word, is_start_of_command)
+                }
+                _ => {
+                    let word = self.parse_word()?;
+                    self.classify_word(word, is_start_of_command)
+                }
             };
-            
+
+            // Update state for next token
+            is_start_of_command = match &token {
+                Token::Semicolon | Token::Pipe => true,
+                _ => false,
+            };
+
             let end = self.position - 1;
             tokens.push(TokenWithPos { token, start, end });
         }
-        
+
         Ok(tokens)
     }
 
-    fn parse_quoted_string(&mut self) -> Result<Token> {
+    fn classify_word(&self, word: String, is_start_of_command: bool) -> Token {
+        if is_start_of_command {
+            Token::Command(word)
+        } else if word.starts_with('-') {
+            Token::Flag(word)
+        } else {
+            Token::Argument(word)
+        }
+    }
+
+    fn parse_quoted_string(&mut self) -> Result<String> {
         let quote_char = self.current_char.unwrap();
         let quote_start = self.position - 1;
         self.advance(); // Skip opening quote
-        
+
         let mut content = String::new();
         let mut escaped = false;
-        
+
         while let Some(c) = self.current_char {
             if escaped {
                 content.push(c);
@@ -102,21 +121,21 @@ impl Lexer {
                 self.advance();
             } else if c == quote_char {
                 self.advance(); // Skip closing quote
-                return Ok(Token::Word(content));
+                return Ok(content);
             } else {
                 content.push(c);
                 self.advance();
             }
         }
-        
+
         // If we get here, we reached EOF without closing quote
         Err(ShellError::lexer("Unclosed quote", quote_start))
     }
 
-    fn parse_word(&mut self) -> Result<Token> {
+    fn parse_word(&mut self) -> Result<String> {
         let mut word = String::new();
         let mut escaped = false;
-        
+
         while let Some(c) = self.current_char {
             if escaped {
                 word.push(c);
@@ -125,14 +144,14 @@ impl Lexer {
             } else if c == '\\' {
                 escaped = true;
                 self.advance();
-            } else if c.is_whitespace() || matches!(c, '|' | '>' | '<' | '&' | ';') {
+            } else if c.is_whitespace() || matches!(c, '|' | '>' | '<' | ';') {
                 break;
             } else {
                 word.push(c);
                 self.advance();
             }
         }
-        
-        Ok(Token::Word(word))
+
+        Ok(word)
     }
 }

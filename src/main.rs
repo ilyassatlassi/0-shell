@@ -45,9 +45,11 @@ fn run_shell() -> Result<(), ShellError> {
                 // Tokenize and execute
                 let mut lexer = Lexer::new(input.to_string());
                 let tokens_with_pos = lexer.tokenize()?;
+                println!("{:?}", tokens_with_pos);
                 
                 let tokens: Vec<Token> = tokens_with_pos.into_iter().map(|twp| twp.token).collect();
                 
+                println!("{:?}", tokens);
                 match executor.execute_tokens(tokens) {
                     Ok(_) => {}
                     Err(e) => eprintln!("Error: {}", e),

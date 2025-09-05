@@ -18,7 +18,7 @@ impl Executor {
         // Simple command parsing (no pipes/redirection yet)
         for token in tokens {
             match token {
-                Token::Word(cmd) => {
+                Token::Command(cmd) => {
                     current_command.push(cmd);
                 }
                 Token::Semicolon => {
