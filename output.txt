@@ -1,1 +1,13 @@
-how are you my freidn
+total 48
+drwxrwxr-x  6 ilyass ilyass 4096 Sep  6 19:49 .
+drwxr-xr-x 10 ilyass ilyass 4096 Sep  2 15:30 ..
+-rw-rw-r--  1 ilyass ilyass 6792 Sep  2 16:04 Cargo.lock
+-rw-rw-r--  1 ilyass ilyass  163 Sep  2 16:04 Cargo.toml
+drwxrwxr-x  8 ilyass ilyass 4096 Sep  6 18:50 .git
+-rw-rw-r--  1 ilyass ilyass  684 Sep  2 15:30 .gitignore
+-rw-rw-r--  1 ilyass ilyass    0 Sep  6 19:54 output.txt
+-rw-rw-r--  1 ilyass ilyass    9 Sep  2 15:30 README.md
+-rw-rw-r--  1 ilyass ilyass   13 Sep  6 19:49 result.txt
+drwxrwxr-x  8 ilyass ilyass 4096 Sep  2 17:23 src
+drwxrwxr-x  4 ilyass ilyass 4096 Sep  2 16:04 target
+drwxrwxr-x  2 ilyass ilyass 4096 Sep  2 16:04 tests

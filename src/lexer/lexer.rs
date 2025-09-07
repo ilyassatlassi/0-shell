@@ -151,6 +151,7 @@ impl Lexer {
                 self.advance();
             }
         }
+        println!("{}", word);
 
         Ok(word)
     }

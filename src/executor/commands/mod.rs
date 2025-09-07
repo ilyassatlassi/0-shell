@@ -17,7 +17,7 @@ pub trait Command {
 
 pub fn get_command(name: &str) -> Option<Box<dyn Command>> {
     match name {
-        // "echo" => Some(Box::new(echo::Echo)),
+        "echo" => Some(Box::new(echo::Echo)),
         // "cd" => Some(Box::new(cd::Cd)),
         // "ls" => Some(Box::new(ls::Ls)),
         // "pwd" => Some(Box::new(pwd::Pwd)),
