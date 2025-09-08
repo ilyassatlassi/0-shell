@@ -1,11 +1,18 @@
+use std::io::{Read, Write};
 use crate::utils::error::Result;
 
 pub struct Echo;
 
 impl super::Command for Echo {
-    fn execute(&self, args: &[String]) -> Result<()> {
+    fn execute(
+        &self, 
+        args: &[String], 
+        _stdin: &mut dyn Read,  // Echo doesn't need stdin
+        stdout: &mut dyn Write, 
+        _stderr: &mut dyn Write  // Echo doesn't need stderr
+    ) -> Result<()> {
         if args.is_empty() {
-            println!();
+            writeln!(stdout)?;
             return Ok(());
         }
 
@@ -23,11 +30,12 @@ impl super::Command for Echo {
             first = false;
         }
         
-        println!("{}", output);
+        writeln!(stdout, "{}", output)?;
         Ok(())
     }
 }
 
+// Keep the same process_escape_sequences method
 impl Echo {
     fn process_escape_sequences(&self, input: &str) -> String {
         let mut result = String::new();

@@ -10,10 +10,18 @@ pub mod mkdir;
 pub mod exit;
 
 use crate::utils::error::Result;
+use std::io::{Read, Write};
 
 pub trait Command {
-    fn execute(&self, args: &[String]) -> Result<()>;
+    fn execute(
+        &self, 
+        args: &[String], 
+        stdin: &mut dyn Read,
+        stdout: &mut dyn Write, 
+        stderr: &mut dyn Write
+    ) -> Result<()>;
 }
+
 
 pub fn get_command(name: &str) -> Option<Box<dyn Command>> {
     match name {
